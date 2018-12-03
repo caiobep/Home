@@ -1,6 +1,6 @@
 command: "osascript -e 'tell application \"Finder\" to get posix path of (get desktop picture as alias)'"
 
-refreshFrequency: 500;
+refreshFrequency: 500
 
 render: (output) ->
   """
@@ -11,12 +11,25 @@ render: (output) ->
 
 update: (output, domEl) ->
 
+  themePath = output.split "/"
+  imageName = themePath[themePath.length - 1].split(".")[0].split('-')
+  isThemeNamePresent = imageName.length > 1
+
   if output.includes "green"
-    @handleGreen(domEl)
-  else if output.includes "red"
-    @handleRed(domEl)
-  else if output.includes "pink"
-    @handlePink(domEl)
+    themeName = if isThemeNamePresent then imageName[1] else 'Lily'
+    @changeUi("green", themeName)
+  
+  if output.includes "red"
+    themeName = if isThemeNamePresent then imageName[1] else 'Rose'
+    @changeUi("red", themeName)
+
+  if output.includes "pink"
+    themeName = if isThemeNamePresent then imageName[1] else 'Soft'
+    @changeUi("pink", themeName)
+  
+  if output.includes "yellow"
+    themeName = if isThemeNamePresent then imageName[1] else 'Melt'
+    @changeUi("yellow", themeName)
 
 # --
 # -- Handle theme switching
@@ -24,20 +37,17 @@ update: (output, domEl) ->
 # -- based on the name of the desktop image
 # --
 
-handleGreen: (domEl) ->
-  $(".themeable").removeClass("red")
-  $(".themeable").removeClass("pink")
-  $(".theamable").addClass("green")
-  $(".theme").text("Lily")
+changeUi: (color, uiName) ->
+  @addColor(color)
+  $(".theme").text(uiName)
 
-handleRed: (domEl) ->
-  $(".themeable").removeClass("green")
-  $(".themeable").removeClass("pink")
-  $(".themeable").addClass("red")
-  $(".theme").text("Rose")
+addColor: (colorToBeAdded) ->
+  colors = ['green', 'pink', 'yellow', 'red']
+  colorsToBeRemoved = colors.filter (color) -> color isnt colorToBeAdded
 
-handlePink: (domEl) ->
-  $(".themeable").removeClass("green")
-  $(".themeable").removeClass("red")
-  $(".themeable").addClass("pink")
-  $(".theme").text("Soft")
+  for color in colorsToBeRemoved
+    $(".themeable").removeClass(color)
+
+  $(".themeable").addClass(colorToBeAdded)
+
+
